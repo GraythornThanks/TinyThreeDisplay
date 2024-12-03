@@ -40,6 +40,7 @@ yarn-error.log*
 dist/
 dist-ssr/
 *.local
+package-lock.json
 
 # IDE
 .idea/
@@ -63,6 +64,7 @@ frontend/.env.local
 frontend/.env.development.local
 frontend/.env.test.local
 frontend/.env.production.local
+frontend/tsconfig.app.json
 
 # Docker
 .docker/
