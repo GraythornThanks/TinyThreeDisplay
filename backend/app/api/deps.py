@@ -8,7 +8,7 @@ from sqlalchemy.orm import Session
 from app.core.config import settings
 from app.db.database import SessionLocal
 from app.models.admin import Admin
-import app.crud.admin as crud
+from app.crud.admin import admin
 
 reusable_oauth2 = OAuth2PasswordBearer(
     tokenUrl=f"{settings.API_V1_STR}/admin/login"
@@ -36,8 +36,8 @@ def get_current_admin(
             detail="Could not validate credentials",
         )
     
-    admin = crud.get_admin(db)
-    if not admin or admin.id != admin_id:
+    current_admin = admin.get_admin(db)
+    if not current_admin or current_admin.id != admin_id:
         raise HTTPException(status_code=404, detail="Admin not found")
     
-    return admin 
+    return current_admin 

@@ -1,4 +1,4 @@
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 from typing import Optional
 from datetime import datetime
 
@@ -11,6 +11,10 @@ class AdminCreate(BaseModel):
 
 class AdminUpdate(AdminBase):
     password: Optional[str] = None
+
+class PasswordUpdate(BaseModel):
+    old_password: str = Field(..., description="当前密码")
+    new_password: str = Field(..., min_length=6, description="新密码")
 
 class Admin(AdminBase):
     id: int
