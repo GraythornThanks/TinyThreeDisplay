@@ -1,151 +1,147 @@
-import React, { useState, useRef } from 'react';
+import React, { useState } from 'react';
 import {
     Container,
-    Box,
+    Paper,
     Typography,
     TextField,
     Button,
-    Paper,
+    Box,
     Avatar,
-    IconButton,
     Alert,
+    Snackbar,
 } from '@mui/material';
-import { PhotoCamera, Save } from '@mui/icons-material';
-import { useAuth } from '../contexts/AuthContext';
-import { AdminUpdateForm } from '../types/auth';
+import { Person as PersonIcon } from '@mui/icons-material';
+import { useAdmin } from '../hooks/useAdmin';
+import { adminApi } from '../services/api';
+import PasswordChangeDialog from '../components/PasswordChangeDialog';
 
 const AdminProfile: React.FC = () => {
-    const { admin, updateProfile, updateAvatar } = useAuth();
+    const { admin, updateAdmin } = useAdmin();
+    const [nickname, setNickname] = useState(admin?.nickname || '');
+    const [bio, setBio] = useState(admin?.bio || '');
     const [error, setError] = useState<string | null>(null);
     const [success, setSuccess] = useState<string | null>(null);
-    const fileInputRef = useRef<HTMLInputElement>(null);
-    const [formData, setFormData] = useState<AdminUpdateForm>({
-        nickname: admin?.nickname || '',
-        bio: admin?.bio || '',
-    });
-
-    const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        const { name, value } = e.target;
-        setFormData((prev) => ({
-            ...prev,
-            [name]: value,
-        }));
-    };
+    const [isPasswordDialogOpen, setIsPasswordDialogOpen] = useState(false);
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
+        setError(null);
         try {
-            await updateProfile(formData);
-            setSuccess('个人资料更新成功！');
-            setError(null);
+            const updatedAdmin = await adminApi.updateMe({ nickname, bio });
+            updateAdmin(updatedAdmin);
+            setSuccess('个人资料更新成功');
         } catch (error) {
-            setError('更新失败，请重试！');
-            setSuccess(null);
+            setError('更新个人资料失败，请重试');
         }
     };
 
-    const handleAvatarClick = () => {
-        fileInputRef.current?.click();
-    };
-
     const handleAvatarChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
-        const file = e.target.files?.[0];
-        if (file) {
+        if (e.target.files && e.target.files[0]) {
+            const file = e.target.files[0];
             try {
-                await updateAvatar(file);
-                setSuccess('头像更新成功！');
-                setError(null);
+                const updatedAdmin = await adminApi.updateAvatar(file);
+                updateAdmin(updatedAdmin);
+                setSuccess('头像更新成功');
             } catch (error) {
-                setError('头像更新失败，请重试！');
-                setSuccess(null);
+                setError('上传头像失败，请重试');
             }
         }
     };
 
+    const handlePasswordSuccess = () => {
+        setSuccess('密码修改成功');
+    };
+
     return (
-        <Container component="main" maxWidth="sm">
-            <Paper elevation={3} sx={{ p: 4, mt: 4 }}>
-                <Typography component="h1" variant="h5" sx={{ mb: 3 }}>
+        <Container maxWidth="md">
+            <Paper sx={{ p: 4, mt: 4 }}>
+                <Typography variant="h5" gutterBottom>
                     个人资料
                 </Typography>
 
-                {error && (
-                    <Alert severity="error" sx={{ mb: 2 }}>
-                        {error}
-                    </Alert>
-                )}
-
-                {success && (
-                    <Alert severity="success" sx={{ mb: 2 }}>
-                        {success}
-                    </Alert>
-                )}
-
-                <Box sx={{ display: 'flex', justifyContent: 'center', mb: 3 }}>
-                    <Box sx={{ position: 'relative' }}>
+                <Box sx={{ mb: 4, display: 'flex', alignItems: 'center' }}>
+                    <input
+                        accept="image/*"
+                        style={{ display: 'none' }}
+                        id="avatar-upload"
+                        type="file"
+                        onChange={handleAvatarChange}
+                    />
+                    <label htmlFor="avatar-upload">
                         <Avatar
                             src={admin?.avatar_path ? `/uploads/${admin.avatar_path}` : undefined}
-                            sx={{ width: 100, height: 100, cursor: 'pointer' }}
-                            onClick={handleAvatarClick}
-                        />
-                        <IconButton
                             sx={{
-                                position: 'absolute',
-                                bottom: 0,
-                                right: 0,
-                                backgroundColor: 'rgba(0, 0, 0, 0.3)',
+                                width: 100,
+                                height: 100,
+                                cursor: 'pointer',
                                 '&:hover': {
-                                    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+                                    opacity: 0.8,
                                 },
                             }}
-                            onClick={handleAvatarClick}
                         >
-                            <PhotoCamera />
-                        </IconButton>
-                        <input
-                            type="file"
-                            ref={fileInputRef}
-                            hidden
-                            accept="image/*"
-                            onChange={handleAvatarChange}
-                        />
+                            <PersonIcon sx={{ fontSize: 60 }} />
+                        </Avatar>
+                    </label>
+                    <Box sx={{ ml: 2 }}>
+                        <Typography variant="body2" color="text.secondary">
+                            点击头像更换图片
+                        </Typography>
                     </Box>
                 </Box>
 
-                <Box component="form" onSubmit={handleSubmit}>
+                <form onSubmit={handleSubmit}>
                     <TextField
-                        margin="normal"
                         fullWidth
-                        id="nickname"
                         label="昵称"
-                        name="nickname"
-                        value={formData.nickname}
-                        onChange={handleChange}
-                    />
-
-                    <TextField
+                        value={nickname}
+                        onChange={(e) => setNickname(e.target.value)}
                         margin="normal"
+                    />
+                    <TextField
                         fullWidth
-                        id="bio"
                         label="个人简介"
-                        name="bio"
+                        value={bio}
+                        onChange={(e) => setBio(e.target.value)}
+                        margin="normal"
                         multiline
                         rows={4}
-                        value={formData.bio}
-                        onChange={handleChange}
                     />
-
-                    <Button
-                        type="submit"
-                        fullWidth
-                        variant="contained"
-                        sx={{ mt: 3 }}
-                        startIcon={<Save />}
-                    >
-                        保存更改
-                    </Button>
-                </Box>
+                    <Box sx={{ mt: 3, display: 'flex', gap: 2 }}>
+                        <Button type="submit" variant="contained">
+                            保存修改
+                        </Button>
+                        <Button
+                            variant="outlined"
+                            color="primary"
+                            onClick={() => setIsPasswordDialogOpen(true)}
+                        >
+                            修改密码
+                        </Button>
+                    </Box>
+                </form>
             </Paper>
+
+            <PasswordChangeDialog
+                open={isPasswordDialogOpen}
+                onClose={() => setIsPasswordDialogOpen(false)}
+                onSuccess={handlePasswordSuccess}
+            />
+
+            <Snackbar
+                open={!!error || !!success}
+                autoHideDuration={6000}
+                onClose={() => {
+                    setError(null);
+                    setSuccess(null);
+                }}
+            >
+                <Alert
+                    severity={error ? 'error' : 'success'}
+                    sx={{ width: '100%' }}
+                >
+                    {error || success}
+                </Alert>
+            </Snackbar>
         </Container>
     );
 };

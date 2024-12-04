@@ -15,14 +15,15 @@ import {
     Person as PersonIcon,
     Logout as LogoutIcon,
 } from '@mui/icons-material';
-import { useAuth } from '../contexts/AuthContext';
+import { useAdmin } from '../hooks/useAdmin';
 
 const AdminDashboard: React.FC = () => {
     const navigate = useNavigate();
-    const { admin, logout } = useAuth();
+    const { admin, logout } = useAdmin();
 
     const handleLogout = () => {
         logout();
+        navigate('/admin/login');
     };
 
     return (
