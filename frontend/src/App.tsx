@@ -1,76 +1,64 @@
-import React from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
-import { ThemeProvider, createTheme, CssBaseline, StyledEngineProvider } from '@mui/material';
-import { AuthProvider, useAuth } from './contexts/AuthContext';
-import Login from './pages/Login';
-import AdminDashboard from './pages/AdminDashboard';
+import { StyledEngineProvider, CssBaseline, ThemeProvider, createTheme } from '@mui/material';
+import { AdminProvider } from './contexts/AdminContext';
+import AdminLogin from './pages/AdminLogin';
 import AdminProfile from './pages/AdminProfile';
+import AdminDashboard from './pages/AdminDashboard';
+import HomePage from './pages/HomePage';
+import Layout from './components/Layout';
+import PrivateRoute from './components/PrivateRoute';
 
 // 创建主题
 const theme = createTheme({
-    palette: {
-        primary: {
-            main: '#1976d2',
-        },
-        secondary: {
-            main: '#dc004e',
-        },
+  palette: {
+    mode: 'light',
+    primary: {
+      main: '#1976d2',
     },
+    background: {
+      default: '#f5f5f5',
+      paper: '#ffffff',
+    },
+  },
 });
 
-function PrivateRoute({ children }: { children: React.ReactNode }) {
-    const { isAuthenticated, isLoading } = useAuth();
-
-    if (isLoading) {
-        return null; // 或者显示加载指示器
-    }
-
-    return isAuthenticated ? <>{children}</> : <Navigate to="/login" replace />;
-}
-
-function AppRoutes() {
-    return (
-        <Routes>
-            {/* 公共页面 */}
-            <Route path="/login" element={<Login />} />
-
-            {/* 受保护的页面 */}
-            <Route
-                path="/admin"
+function App() {
+  return (
+    <StyledEngineProvider injectFirst>
+      <ThemeProvider theme={theme}>
+        <CssBaseline />
+        <AdminProvider>
+          <Router>
+            <Routes>
+              <Route path="/" element={<Layout><HomePage /></Layout>} />
+              <Route path="/admin/login" element={<Layout><AdminLogin /></Layout>} />
+              <Route
+                path="/admin/dashboard"
                 element={
+                  <Layout>
                     <PrivateRoute>
-                        <AdminDashboard />
+                      <AdminDashboard />
                     </PrivateRoute>
+                  </Layout>
                 }
-            />
-            <Route
+              />
+              <Route
                 path="/admin/profile"
                 element={
+                  <Layout>
                     <PrivateRoute>
-                        <AdminProfile />
+                      <AdminProfile />
                     </PrivateRoute>
+                  </Layout>
                 }
-            />
-
-            {/* 默认重定向 */}
-            <Route path="*" element={<Navigate to="/login" replace />} />
-        </Routes>
-    );
-}
-
-function App() {
-    return (
-        <StyledEngineProvider injectFirst>
-            <ThemeProvider theme={theme}>
-                <CssBaseline />
-                <Router future={{ v7_startTransition: true }}>
-                    <AuthProvider>
-                        <AppRoutes />
-                    </AuthProvider>
-                </Router>
-            </ThemeProvider>
-        </StyledEngineProvider>
-    );
+              />
+              <Route path="*" element={<Navigate to="/" replace />} />
+            </Routes>
+          </Router>
+        </AdminProvider>
+      </ThemeProvider>
+    </StyledEngineProvider>
+  );
 }
 
 export default App; 
