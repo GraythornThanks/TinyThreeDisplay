@@ -7,6 +7,8 @@ services:
       dockerfile: Dockerfile
       args:
         - USE_CHINESE_MIRRORS=${USE_CHINESE_MIRRORS:-false}
+        - NPM_MIRROR=${NPM_MIRROR:-https://registry.npmjs.org}
+      network: ${DOCKER_BUILD_NETWORK:-default}
     container_name: threedisplay_frontend
     ports:
       - "80:80"
@@ -22,6 +24,8 @@ services:
       dockerfile: Dockerfile
       args:
         - USE_CHINESE_MIRRORS=${USE_CHINESE_MIRRORS:-false}
+        - PYPI_MIRROR=${PYPI_MIRROR:-https://pypi.org/simple}
+      network: ${DOCKER_BUILD_NETWORK:-default}
     container_name: threedisplay_backend
     ports:
       - "8000:8000"
