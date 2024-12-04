@@ -5,6 +5,8 @@ services:
     build:
       context: ./frontend
       dockerfile: Dockerfile
+      args:
+        - USE_CHINESE_MIRRORS=${USE_CHINESE_MIRRORS:-false}
     container_name: threedisplay_frontend
     ports:
       - "80:80"
@@ -18,6 +20,8 @@ services:
     build:
       context: ./backend
       dockerfile: Dockerfile
+      args:
+        - USE_CHINESE_MIRRORS=${USE_CHINESE_MIRRORS:-false}
     container_name: threedisplay_backend
     ports:
       - "8000:8000"

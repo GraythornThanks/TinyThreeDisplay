@@ -57,6 +57,7 @@ cp backend/.env.example backend/.env
 - `SECRET_KEY`: 用于JWT加密的密钥
 - `ADMIN_DEFAULT_PASSWORD`: 管理员初始密码
 - `POSTGRES_*`: 数据库配置
+- `USE_CHINESE_MIRRORS`: 是否使用国内镜像源（可选，默认false）
 
 3. 创建必要的目录
 ```bash
@@ -66,7 +67,11 @@ chmod -R 755 backend/uploads
 
 4. 启动服务
 ```bash
+# 使用默认源
 docker-compose up --build -d
+
+# 或使用国内源加快构建速度
+USE_CHINESE_MIRRORS=true docker-compose up --build -d
 ```
 
 5. 访问服务

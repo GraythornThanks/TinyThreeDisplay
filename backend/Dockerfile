@@ -19,8 +19,13 @@ COPY requirements.txt .
 COPY app/ ./app/
 COPY main.py .
 
-# 安装Python依赖
-RUN pip install --no-cache-dir -r requirements.txt
+# 安装Python依赖（支持使用国内源）
+ARG USE_CHINESE_MIRRORS=false
+RUN if [ "$USE_CHINESE_MIRRORS" = "true" ] ; then \
+        pip config set global.index-url https://pypi.tuna.tsinghua.edu.cn/simple && \
+        pip config set global.trusted-host pypi.tuna.tsinghua.edu.cn ; \
+    fi && \
+    pip install --no-cache-dir -r requirements.txt
 
 # 创建上传目录
 RUN mkdir -p /app/uploads/avatars && \
