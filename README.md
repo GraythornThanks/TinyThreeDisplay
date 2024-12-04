@@ -1,206 +1,189 @@
 # ThreeDisplay
 
-ThreeDisplay 是一个用于3D模型展示和管理的Web应用系统。
-
-## 技术栈
-
-### 前端
-- React + TypeScript
-- Material-UI (MUI)
-- Three.js
-- Vite
-
-### 后端
-- FastAPI
-- SQLAlchemy
-- PostgreSQL
-- Python 3.11
-
-### 部署
-- Docker
-- Nginx
-- Uvicorn
+ThreeDisplay 是一个用于管理和展示3D模型的Web应用。它提供了模型上传、预览、管理等功能，支持多种3D文件格式。
 
 ## 功能特性
 
+- 支持多种3D模型格式（glb, gltf, obj, fbx, stl）
+- 模型在线预览和交互
+- 模型管理（上传、编辑、删除）
 - 管理员账户系统
-  - 密码登录
-  - 个人资料管理
-  - 头像上传
+- 响应式设计，支持移动端访问
 
-- 3D模型管理（开发中）
-  - 模型上传
-  - 模型预览
-  - 模型列表
-  - 模型编辑
+## 技术栈
 
-## 部署指南
+### 后端
+- Python 3.11
+- FastAPI
+- SQLAlchemy
+- PostgreSQL
+- Alembic（数据库迁移）
+- JWT认证
+- Pydantic数据验证
 
-### 环境要求
+### 前端
+- TypeScript
+- React 18
+- Material-UI (MUI)
+- Three.js
+- React Three Fiber
+- Vite
+- React Router
+- Axios
 
+### 部署
 - Docker
 - Docker Compose
+- Nginx
 
-### 部署步骤
+## 开发环境设置
 
-1. 克隆项目
-```bash
-git clone https://github.com/yourusername/threedisplay.git
-cd threedisplay
+1. 克隆仓库：
+   ```bash
+   git clone https://github.com/yourusername/threedisplay.git
+   cd threedisplay
+   ```
+
+2. 配置环境变量：
+   ```bash
+   cp .env.example .env
+   cp backend/.env.example backend/.env
+   ```
+   根据需要修改配置文件中的值。
+
+3. 启动开发环境：
+   ```bash
+   # 使用开发配置启动
+   docker-compose -f docker-compose.yml -f docker-compose.dev.yml up -d
+
+   # 或使用生产配置启动
+   docker-compose up -d
+   ```
+
+4. 访问应用：
+   - 前端开发服务器：http://localhost:5173
+   - 前端生产服务：http://localhost:3000
+   - 后端API：http://localhost:8000
+   - API文档：http://localhost:8000/docs
+
+## 配置说明
+
+### 根目录 .env
+
+```env
+# 基本配置
+COMPOSE_PROJECT_NAME=threedisplay
+
+# 数据库配置
+POSTGRES_USER=postgres
+POSTGRES_PASSWORD=postgres
+POSTGRES_DB=threedisplay
+POSTGRES_PORT=5432
+
+# 后端配置
+BACKEND_PORT=8000
+BACKEND_RELOAD=true
+BACKEND_WORKERS=1
+BACKEND_LOG_LEVEL=info
+
+# 前端配置
+FRONTEND_PORT=3000
+FRONTEND_DEV_PORT=5173
+VITE_API_URL=http://localhost:8000/api/v1
+
+# 包镜像配置（可选）
+USE_CHINA_MIRRORS=false
+NPM_MIRROR=https://registry.npmmirror.com
+PYPI_MIRROR=https://mirrors.aliyun.com/pypi/simple
 ```
 
-2. 配置环境变量
-```bash
-cp backend/.env.example backend/.env
+### 后端 backend/.env
+
+```env
+# 基本配置
+PROJECT_NAME=ThreeDisplay
+VERSION=1.0.0
+API_V1_STR=/api/v1
+
+# 安全配置
+SECRET_KEY=your-secret-key-keep-it-secret
+ALGORITHM=HS256
+ACCESS_TOKEN_EXPIRE_MINUTES=30
+
+# 管理员配置
+ADMIN_DEFAULT_PASSWORD=admin123  # 生产环境中应修改为强密码
+
+# 文件上传配置
+UPLOAD_DIR=uploads
+MAX_UPLOAD_SIZE=104857600  # 100MB
+ALLOWED_EXTENSIONS=glb,gltf,obj,fbx,stl
+
+# 更多配置请参考 backend/.env.example
 ```
-编辑 `.env` 文件，设置必要的环境变量：
-- `SECRET_KEY`: 用于JWT加密的密钥
-- `ADMIN_DEFAULT_PASSWORD`: 管理员初始密码
-- `POSTGRES_*`: 数据库配置
-- `USE_CHINESE_MIRRORS`: 是否使用国内镜像源（可选，默认false）
 
-3. 创建必要的目录
-```bash
-mkdir -p backend/uploads/avatars
-chmod -R 755 backend/uploads
-```
-
-4. 启动服务
-```bash
-# 使用默认源
-docker-compose up --build -d
-
-# 或使用国内源加快构建速度
-USE_CHINESE_MIRRORS=true docker-compose up --build -d
-```
-
-5. 访问服务
-- 前端界面：http://localhost
-- 后端API文档：http://localhost:8000/docs
-- 管理员登录：http://localhost/admin/login
-
-### 目录结构
+## 目录结构
 
 ```
 threedisplay/
-├── backend/
-│   ├── app/
-│   │   ├── api/
-│   │   ├── core/
-│   │   ├── crud/
-│   │   ├── db/
-│   │   ├── models/
-│   │   └── schemas/
-│   ├── uploads/
-│   ├── Dockerfile
-│   └── requirements.txt
-├── frontend/
-│   ├── src/
-│   │   ├── components/
-│   │   ├── contexts/
-│   │   ├── hooks/
-│   │   ├── pages/
-│   │   ├── services/
-│   │   └── types/
-│   ├── Dockerfile
-│   └── nginx.conf
-├── docker-compose.yml
-└── README.md
+├── backend/                # 后端代码
+│   ├── app/               # 应用代码
+│   │   ├── api/          # API路由
+│   │   ├── core/         # 核心功能
+│   │   ├── crud/         # CRUD操作
+│   │   ├── db/           # 数据库配置
+│   │   ├── models/       # 数据库模型
+│   │   └── schemas/      # Pydantic模式
+│   ├── uploads/          # 上传文件存储
+│   └── tests/            # 测试代码
+├── frontend/             # 前端代码
+│   ├── public/          # 静态资源
+│   └── src/             # 源代码
+│       ├── components/  # React组件
+│       ├── contexts/    # React上下文
+│       ├── hooks/       # 自定义Hooks
+│       ├── pages/       # 页面组件
+│       ├── services/    # API服务
+│       └── types/       # TypeScript类型
+└── docker/              # Docker配置
 ```
 
-### 配置说明
+## API文档
 
-#### 环境变量
+启动后端服务后，可以通过以下地址访问API文档：
+- Swagger UI：http://localhost:8000/docs
+- ReDoc：http://localhost:8000/redoc
 
-- `PROJECT_NAME`: 项目名称
-- `VERSION`: 版本号
-- `API_V1_STR`: API前缀
-- `SECRET_KEY`: JWT密钥
-- `ALGORITHM`: JWT算法
-- `ACCESS_TOKEN_EXPIRE_MINUTES`: Token过期时间
-- `ADMIN_DEFAULT_PASSWORD`: 管理员初始密码
-- `POSTGRES_*`: 数据库配置
-- `UPLOAD_DIR`: 上传目录
-- `MAX_UPLOAD_SIZE`: 最大上传大小
-- `ALLOWED_EXTENSIONS`: 允许的文件扩展名
-- `BACKEND_CORS_ORIGINS`: CORS配置
+## 部署
 
-#### 数据库
+1. 修改配置文件：
+   - 修改 `.env` 和 `backend/.env` 中的配置
+   - 确保设置了安全的密钥和密码
+   - 配置正确的域名和CORS设置
 
-PostgreSQL数据库配置：
-- 端口: 5433（外部访问）
-- 用户名: 通过环境变量配置
-- 密码: 通过环境变量配置
-- 数据库名: 通过环境变量配置
+2. 构建和启动服务：
+   ```bash
+   docker-compose build
+   docker-compose up -d
+   ```
 
-#### Nginx
+3. 初始化数据库：
+   ```bash
+   docker-compose exec backend alembic upgrade head
+   ```
 
-前端服务器配置：
-- 端口: 80
-- 静态文件目录: /usr/share/nginx/html
-- API代理: /api/v1 -> backend:8000
+4. 设置反向代理（可选）：
+   - 配置Nginx或其他Web服务器
+   - 启用HTTPS
+   - 配置适当的缓存策略
 
-## 开发指南
+## 贡献指南
 
-### 前端开发
-
-1. 安装依赖
-```bash
-cd frontend
-npm install
-```
-
-2. 启动开发服务器
-```bash
-npm run dev
-```
-
-### 后端开发
-
-1. 创建虚拟环境
-```bash
-cd backend
-python -m venv venv
-source venv/bin/activate  # Linux/Mac
-venv\Scripts\activate     # Windows
-```
-
-2. 安装依赖
-```bash
-pip install -r requirements.txt
-```
-
-3. 启动开发服务器
-```bash
-uvicorn main:app --reload
-```
-
-## 维护说明
-
-### 日志
-
-- 前端日志：容器日志
-- 后端日志：容器日志
-- 数据库日志：PostgreSQL日志
-
-### 备份
-
-建议定期备份以下内容：
-- PostgreSQL数据库
-- uploads目录（用户上传的文件）
-
-### 更新
-
-1. 拉取最新代码
-```bash
-git pull
-```
-
-2. 重新构建并启动服务
-```bash
-docker-compose up --build -d
-```
+1. Fork 项目
+2. 创建功能分支：`git checkout -b feature/AmazingFeature`
+3. 提交更改：`git commit -m 'Add some AmazingFeature'`
+4. 推送到分支：`git push origin feature/AmazingFeature`
+5. 提交Pull Request
 
 ## 许可证
 
-[MIT License](LICENSE) 
+本项目采用 MIT 许可证 - 详见 [LICENSE](LICENSE) 文件 

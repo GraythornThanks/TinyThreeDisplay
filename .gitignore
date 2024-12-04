@@ -4,7 +4,6 @@ __pycache__/
 *$py.class
 *.so
 .Python
-env/
 build/
 develop-eggs/
 dist/
@@ -20,13 +19,10 @@ wheels/
 *.egg-info/
 .installed.cfg
 *.egg
-.pytest_cache/
-.coverage
-htmlcov/
+MANIFEST
 .env
-.venv
 venv/
-ENV/
+.venv/
 
 # Node
 node_modules/
@@ -34,70 +30,25 @@ npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 .pnpm-debug.log*
-.npm
-.yarn
-.pnp.*
-dist/
-dist-ssr/
-*.local
-package-lock.json
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
 
 # IDE
 .idea/
 .vscode/
 *.swp
 *.swo
-*~
+*.swn
+*.bak
 
 # OS
 .DS_Store
 Thumbs.db
-Desktop.ini
 
 # Project specific
 backend/uploads/*
 !backend/uploads/.gitkeep
-backend/app.db
-backend/app.db-journal
-backend/*.log
-frontend/.env.local
-frontend/.env.development.local
-frontend/.env.test.local
-frontend/.env.production.local
-frontend/tsconfig.app.json
-
-# Docker
-.docker/
-docker-compose.override.yml
-*.env
-!.env.example
-!backend/.env.example
-
-# Logs
-logs/
-*.log
-npm-debug.log*
-yarn-debug.log*
-yarn-error.log*
-pnpm-debug.log*
-lerna-debug.log*
-
-# Editor directories and files
-.idea
-.DS_Store
-*.suo
-*.ntvs*
-*.njsproj
-*.sln
-*.sw?
-
-# Testing
-coverage/
-.nyc_output/
-.jest/
-__snapshots__/
-
-# Build
-.build/
-out/
-build/
+.env
+frontend/.env
