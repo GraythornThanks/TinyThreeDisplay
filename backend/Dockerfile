@@ -15,15 +15,16 @@ RUN apt-get update \
     && rm -rf /var/lib/apt/lists/*
 
 # 复制项目文件
-COPY ./requirements.txt /app/
-COPY ./app /app/app/
-COPY ./main.py /app/
+COPY requirements.txt .
+COPY app/ ./app/
+COPY main.py .
 
 # 安装Python依赖
 RUN pip install --no-cache-dir -r requirements.txt
 
 # 创建上传目录
-RUN mkdir -p /app/uploads
+RUN mkdir -p /app/uploads/avatars && \
+    chmod -R 755 /app/uploads
 
 # 暴露端口
 EXPOSE 8000
